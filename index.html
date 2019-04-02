@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+  <script src="https://d3js.org/topojson.v2.min.js"></script>
+  <meta charset="utf-8">
+  <title>Project 2</title>
+  <style media="screen">
+  .country {
+fill: rgba(8, 81, 156, 0.6);
+stroke: rgba(8, 81, 156, 0.2);
+stroke-width: 1px;
+}
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div id="europeMap">
+      <svg width="800" height="800" id="map"></svg>
+    </div>
+  </div>
+
+
+  <script type="text/javascript">
+    let svg = d3.select("#map");
+    let width = svg.attr("width");
+    let height = svg.attr("height");
+
+    let margin = {
+      top: 10,
+      right: 10,
+      bottom: 10,
+      left: 10
+    };
+
+    let mapWidth = width - margin.left - margin.right;
+    let mapHeight = height - margin.top - margin.bottom;
+    let mapGroup = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    const awaitData = async () => {
+
+      const europe = await d3.json("europe.json");
+
+      let countries = europe;
+
+      let projection = d3.geoMercator().fitSize([mapWidth, mapHeight], countries);
+      let path = d3.geoPath().projection(projection);
+
+      mapGroup.selectAll("path").data(europe.features)
+        .enter()
+        .append("path")
+        .attr("class", "country")
+        .attr("d", path)
+
+      mapGroup.append("path")
+        .datum(europe)
+        .attr("class", "country")
+        .attr("d", path);
+    }
+    awaitData();
+  </script>
+</body>
+
+</html>
