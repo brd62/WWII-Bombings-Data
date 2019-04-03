@@ -43,13 +43,11 @@
 
       const europe = await d3.json("europe.json");
       const ww1 = await d3.json("ww1.json");
-      let  ww2 = await d3.csv("wwII.csv", d3.autoType);
+      let ww2 = await d3.csv("wwII.csv", d3.autoType);
 
       let bogusValues = ["", null];
 
-      ww2 = ww2.filter( d=> !bogusValues.includes(d["COUNTRY_FLYING_MISSION"]) );
-
-      console.log(ww2)
+      ww2 = ww2.filter(d => !bogusValues.includes(d["COUNTRY_FLYING_MISSION"]));
 
       let countries = europe;
 
@@ -79,24 +77,45 @@
       mapGroup.selectAll("circle").data(ww1)
         .enter()
         .append("circle")
-        .attr("r", 2)
+        .attr("r", 1)
         .attr("opacity", 0.7)
+        .attr("class", "circle")
         .attr("cx", d => d.position[0])
         .attr("cy", d => d.position[1])
         .attr("fill", "orange")
 
-      //comment out below for quicker load
+      // comment out below for quicker load
       mapGroup.selectAll("circle").data(ww2)
         .enter()
         .append("circle")
-        .attr("r", 2)
+        .attr("r", 1)
         .attr("opacity", 0.7)
         .attr("cx", d => d.position[0])
         .attr("cy", d => d.position[1])
-        .attr("fill", "orange")
+        .attr("fill", "purple")
+
+
+      let zoom = d3.zoom()
+        .scaleExtent([1, 10])
+        .translateExtent([
+          [-50, -50],
+          [mapWidth + 50, mapHeight + 50]
+        ])
+        .on("zoom", zoomed)
+
+      svg.call(zoom)
+      svg.call(zoom.transform, d3.zoomIdentity);
+
+      function zoomed() {
+        let transform = d3.event.transform;
+        mapGroup.attr("transform", transform.toString());
+
+        mapGroup.selectAll("circle")
+          .attr("r", 2.5 / transform.k)
+
+      }
 
     }
-
 
 
 
