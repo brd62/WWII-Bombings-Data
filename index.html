@@ -7,11 +7,11 @@
   <meta charset="utf-8">
   <title>Project 2</title>
   <style media="screen">
-  .country {
-fill: rgba(8, 81, 156, 0.6);
-stroke: rgba(8, 81, 156, 0.2);
-stroke-width: 1px;
-}
+    .country {
+      fill: rgba(8, 81, 156, 0.6);
+      stroke: rgba(8, 81, 156, 0.2);
+      stroke-width: 1px;
+    }
   </style>
 </head>
 
@@ -42,23 +42,65 @@ stroke-width: 1px;
     const awaitData = async () => {
 
       const europe = await d3.json("europe.json");
+      const ww1 = await d3.json("ww1.json");
+      let  ww2 = await d3.csv("wwII.csv", d3.autoType);
+
+      let bogusValues = ["", null];
+
+      ww2 = ww2.filter( d=> !bogusValues.includes(d["COUNTRY_FLYING_MISSION"]) );
+
+      console.log(ww2)
 
       let countries = europe;
 
       let projection = d3.geoMercator().fitSize([mapWidth, mapHeight], countries);
       let path = d3.geoPath().projection(projection);
 
+      ww1.forEach(d => {
+        d["position"] = projection([d.LONGITUDE, d.LATITUDE])
+      })
+
+      ww2.forEach(d => {
+        d["position"] = projection([d.LONGITUDE, d.LATITUDE])
+      })
+
       mapGroup.selectAll("path").data(europe.features)
         .enter()
         .append("path")
         .attr("class", "country")
+        .attr("id", d => d.properties.country)
         .attr("d", path)
 
       mapGroup.append("path")
         .datum(europe)
         .attr("class", "country")
         .attr("d", path);
+
+      mapGroup.selectAll("circle").data(ww1)
+        .enter()
+        .append("circle")
+        .attr("r", 2)
+        .attr("opacity", 0.7)
+        .attr("cx", d => d.position[0])
+        .attr("cy", d => d.position[1])
+        .attr("fill", "orange")
+
+      //comment out below for quicker load
+      mapGroup.selectAll("circle").data(ww2)
+        .enter()
+        .append("circle")
+        .attr("r", 2)
+        .attr("opacity", 0.7)
+        .attr("cx", d => d.position[0])
+        .attr("cy", d => d.position[1])
+        .attr("fill", "orange")
+
     }
+
+
+
+
+
     awaitData();
   </script>
 </body>
