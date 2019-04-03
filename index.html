@@ -48,7 +48,7 @@
 
       let bogusValues = ["", null, "UNKNOWN OR NOT INDICATED", "UNIDENTIFIED"];
 
-      ww2 = ww2.filter(d => !bogusValues.includes(d["COUNTRY_FLYING_MISSION"]) && !bogusValues.includes(d["TGT_COUNTRY"]) && !bogusValues.includes(d["TGT_LOCATION"]) );
+      ww2 = ww2.filter(d => !bogusValues.includes(d["COUNTRY_FLYING_MISSION"]) && !bogusValues.includes(d["TGT_COUNTRY"]) && !bogusValues.includes(d["TGT_LOCATION"]));
 
       let countries = europe;
 
@@ -65,10 +65,10 @@
         d["year"] = Number(d.MSNDATE.substring(d.MSNDATE.length - 4));
       })
 
-      let minYearWW1 = d3.min(ww1, d=> d["year"]);
-      let minYearWW2 = d3.min(ww2, d=> d["year"]);
-      let maxYearWW1 = d3.max(ww1, d=> d["year"]);
-      let maxYearWW2 = d3.max(ww2, d=> d["year"]);
+      let minYearWW1 = d3.min(ww1, d => d["year"]);
+      let minYearWW2 = d3.min(ww2, d => d["year"]);
+      let maxYearWW1 = d3.max(ww1, d => d["year"]);
+      let maxYearWW2 = d3.max(ww2, d => d["year"]);
 
       mapGroup.selectAll("path").data(europe.features)
         .enter()
@@ -85,8 +85,10 @@
         .attr("class", "circle")
         .attr("cx", d => d.position[0])
         .attr("cy", d => d.position[1])
-        .attr("year", d=> d.year )
+        .attr("year", d => d.year)
         .attr("fill", "orange")
+        .on("mouseover", mouseoverEvent)
+        .on("mouseout", mouseoutEvent)
 
       // comment out below for quicker load
       // mapGroup.selectAll("circle").data(ww2)
@@ -97,7 +99,13 @@
       //   .attr("cx", d => d.position[0])
       //   .attr("cy", d => d.position[1])
       //   .attr("fill", "purple")
+      function mouseoverEvent() {
+        // need to find postion for labels
+        d3.select(this)
+          .attr("fill", "black")
+          .attr("r", 1.5);
 
+      }
 
       let zoom = d3.zoom()
         .scaleExtent([1, 10])
@@ -109,14 +117,21 @@
 
       svg.call(zoom)
       svg.call(zoom.transform, d3.zoomIdentity);
+      var transform
 
       function zoomed() {
-        let transform = d3.event.transform;
+        transform = d3.event.transform;
         mapGroup.attr("transform", transform.toString());
 
         mapGroup.selectAll("circle")
-          .attr("r", 1 /  Math.sqrt( transform.k))
+          .attr("r", 1 / Math.sqrt(transform.k))
 
+      }
+
+      function mouseoutEvent() {
+        d3.select(this)
+          .attr("fill", "orange")
+          .attr("r", 1 / Math.sqrt(transform.k))
       }
 
     }
