@@ -45,9 +45,10 @@
       const ww1 = await d3.json("ww1.json");
       let ww2 = await d3.csv("wwII.csv", d3.autoType);
 
-      let bogusValues = ["", null];
 
-      ww2 = ww2.filter(d => !bogusValues.includes(d["COUNTRY_FLYING_MISSION"]));
+      let bogusValues = ["", null, "UNKNOWN OR NOT INDICATED", "UNIDENTIFIED"];
+
+      ww2 = ww2.filter(d => !bogusValues.includes(d["COUNTRY_FLYING_MISSION"]) && !bogusValues.includes(d["TGT_COUNTRY"]) && !bogusValues.includes(d["TGT_LOCATION"]) );
 
       let countries = europe;
 
@@ -55,12 +56,19 @@
       let path = d3.geoPath().projection(projection);
 
       ww1.forEach(d => {
-        d["position"] = projection([d.LONGITUDE, d.LATITUDE])
+        d["position"] = projection([d.LONGITUDE, d.LATITUDE]);
+        d["year"] = Number(d.MSNDATE.substring(d.MSNDATE.length - 4));
       })
 
       ww2.forEach(d => {
         d["position"] = projection([d.LONGITUDE, d.LATITUDE])
+        d["year"] = Number(d.MSNDATE.substring(d.MSNDATE.length - 4));
       })
+
+      let minYearWW1 = d3.min(ww1, d=> d["year"]);
+      let minYearWW2 = d3.min(ww2, d=> d["year"]);
+      let maxYearWW1 = d3.max(ww1, d=> d["year"]);
+      let maxYearWW2 = d3.max(ww2, d=> d["year"]);
 
       mapGroup.selectAll("path").data(europe.features)
         .enter()
@@ -69,30 +77,26 @@
         .attr("id", d => d.properties.country)
         .attr("d", path)
 
-      mapGroup.append("path")
-        .datum(europe)
-        .attr("class", "country")
-        .attr("d", path);
-
       mapGroup.selectAll("circle").data(ww1)
         .enter()
         .append("circle")
         .attr("r", 1)
-        .attr("opacity", 0.7)
+        .attr("opacity", 0.8)
         .attr("class", "circle")
         .attr("cx", d => d.position[0])
         .attr("cy", d => d.position[1])
+        .attr("year", d=> d.year )
         .attr("fill", "orange")
 
       // comment out below for quicker load
-      mapGroup.selectAll("circle").data(ww2)
-        .enter()
-        .append("circle")
-        .attr("r", 1)
-        .attr("opacity", 0.7)
-        .attr("cx", d => d.position[0])
-        .attr("cy", d => d.position[1])
-        .attr("fill", "purple")
+      // mapGroup.selectAll("circle").data(ww2)
+      //   .enter()
+      //   .append("circle")
+      //   .attr("r", 1)
+      //   .attr("opacity", 0.7)
+      //   .attr("cx", d => d.position[0])
+      //   .attr("cy", d => d.position[1])
+      //   .attr("fill", "purple")
 
 
       let zoom = d3.zoom()
@@ -111,7 +115,7 @@
         mapGroup.attr("transform", transform.toString());
 
         mapGroup.selectAll("circle")
-          .attr("r", 2.5 / transform.k)
+          .attr("r", 1 /  Math.sqrt( transform.k))
 
       }
 
