@@ -19,7 +19,7 @@
   <div class="container">
     <div id="europeMap">
       <svg width="600" height="600" id="map"></svg>
-      <svg width="500" height="500" id="data"></svg>
+      <svg width="600" height="600" id="data"></svg>
 
     </div>
   </div>
@@ -31,6 +31,9 @@
 
     let width = svg.attr("width");
     let height = svg.attr("height");
+
+    let width2 = svg2.attr("width");
+    let height2 = svg2.attr("height");
 
     let margin = {
       top: 10,
@@ -106,53 +109,70 @@
 
       var ww1id;
       var circle;
-      let data;
+      var circle2
 
-      ww1.forEach((d, i) => {
-        var xPos = d.position[0];
-        var yPos = d.position[1];
-        data = d;
+      circle = mapGroup.selectAll("circle").data(ww1)
+        .enter()
+        .append("circle")
+        .attr("r", 1)
+        .attr("opacity", 0.8)
+        .attr("class", "circle")
+        .attr("cx", d => d.position[0])
+        .attr("cy", d => d.position[1])
+        .attr("year", d => d.year)
+        .attr("fill", "orange")
 
-        circle = mapGroup.selectAll("circle").data(ww1)
-          .enter()
-          .append("circle")
-          .attr("r", 1)
-          .attr("opacity", 0.8)
-          .attr("class", "circle")
-          .attr("cx", d => d.position[0])
-          .attr("cy", d => d.position[1])
-          .attr("year", d => d.year)
+      circle.on("mouseover", function(data) {
+        d3.select(this)
+          .attr("fill", "black")
+          .attr("r", 1.5);
+        dataGroup.append("text")
+          .attr("x", width / 2)
+          .attr("y", height / 4)
+          .attr("class", "wow")
+          .text(d => data['TGTLOCATION'] + ", " + data['TGTCOUNTRY'] + ", " + data["year"]);
+
+      })
+      circle.on("mouseout", function() {
+        d3.select(this)
           .attr("fill", "orange")
+          .attr("r", 1 / Math.sqrt(transform.k));
+        d3.select(".wow").remove()
 
-        circle.on("mouseover", function(data) {
-          d3.select(this)
-            .attr("fill", "black")
-            .attr("r", 1.5);
-          dataGroup.append("text")
-            .attr("x", d => data.position[0])
-            .attr("y", d => data.position[1])
-            .attr("id", "wow")
-            .text(d => data['TGTLOCATION'] + ", " + data["year"]);
-
-        })
-        circle.on("mouseout", function() {
-          d3.select(this)
-            .attr("fill", "orange")
-            .attr("r", 1 / Math.sqrt(transform.k));
-          d3.select("#wow").remove()
-
-        })
       })
 
       // comment out below for quicker load
-      // mapGroup.selectAll("circle").data(ww2)
+      // for some reason the ww1 cirlce data appears when the ww2 circles are loaded
+
+      // circle2 = mapGroup.selectAll("circle").data(ww2)
       //   .enter()
       //   .append("circle")
       //   .attr("r", 1)
-      //   .attr("opacity", 0.7)
+      //   .attr("opacity", 0.8)
+      //   .attr("class", "circle")
       //   .attr("cx", d => d.position[0])
       //   .attr("cy", d => d.position[1])
+      //   .attr("year", d => d.year)
       //   .attr("fill", "purple")
+      //
+      // circle2.on("mouseover", function(data) {
+      //   d3.select(this)
+      //     .attr("fill", "black")
+      //     .attr("r", 1.5);
+      //   dataGroup.append("text")
+      //     .attr("x", width2 / 2)
+      //     .attr("y", height2 / 4)
+      //     .attr("id", "wow")
+      //     .text(d => data['TGT_LOCATION'] + ", " + data["TGT_COUNTRY"] + ", " + data["year"]);
+      //
+      // })
+      // circle2.on("mouseout", function() {
+      //   d3.select(this)
+      //     .attr("fill", "purple")
+      //     .attr("r", 1 / Math.sqrt(transform.k));
+      //   d3.select("#wow").remove()
+      //
+      // })
 
 
     }
