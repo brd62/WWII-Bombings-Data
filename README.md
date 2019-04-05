@@ -5,6 +5,7 @@
 * Brush tool to select bombings from years
   * using the min and max ww1 and ww2 values
   * Default settings so that all dots are not loaded at the beginning
+* Toggle between WW1 and WWW2
 * Clicking on a circle should show more data in an SVG underneath
   * Add more attributes to the circles (the bomber country, weapon type, etc..)
   * Maybe add some type of graphs based on the data
