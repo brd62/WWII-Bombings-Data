@@ -51,8 +51,8 @@
     const awaitData = async () => {
 
       const europe = await d3.json("europe.json");
-      const ww1 = await d3.json("ww1.json");
-      let ww2 = await d3.csv("wwII.csv", d3.autoType);
+      const ww1 = await d3.json("ww1_data.json");
+      let ww2 = await d3.csv("ww2_data.csv", d3.autoType);
 
 
       let bogusValues = ["", null, "UNKNOWN OR NOT INDICATED", "UNIDENTIFIED"];
