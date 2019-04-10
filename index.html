@@ -57,12 +57,12 @@
 
       const europe = await d3.json("europe.json");
       const ww1 = await d3.json("ww1_data.json");
-      let ww2 = await d3.csv("ww2_data.csv", d3.autoType);
+      const ww2 = await d3.csv("wwII_newest.csv", d3.autoType);
 
 
-      let bogusValues = ["", null, "UNKNOWN OR NOT INDICATED", "UNIDENTIFIED", "undefined"];
+ // let bogusValues = ["", null, "UNKNOWN OR NOT INDICATED", "UNIDENTIFIED", "undefined", "UNIDENTIFIED TARGETS", "UNIDENTIFIED TARGET", NaN];
+      // ww2 = ww2.filter(d => !bogusValues.includes(d["COUNTRY_FLYING_MISSION"]) && !bogusValues.includes(d["TGT_INDUSTRY"]) && !bogusValues.includes(d["TGT_TYPE"]) && !bogusValues.includes(d["COUNTRY_FLYING_MISSION"]) && !bogusValues.includes(d["TGT_COUNTRY"]) && !bogusValues.includes(d["TGT_LOCATION"]));
 
-      ww2 = ww2.filter(d => !bogusValues.includes(d["COUNTRY_FLYING_MISSION"]) && !bogusValues.includes(d["TGT_COUNTRY"]) && !bogusValues.includes(d["TGT_LOCATION"]));
 
       var data1 = ww1;
       let countries = europe;
@@ -77,7 +77,7 @@
 
       ww2.forEach(d => {
         d["position"] = projection([d.LONGITUDE, d.LATITUDE])
-        d["year"] = Number(d.MSNDATE.substring(d.MSNDATE.length - 4));
+        // d["year"] = Number(d.MSNDATE.substring(d.MSNDATE.length - 4));
       });
 
       let minYearWW1 = d3.min(ww1, d => d["year"]);
@@ -115,123 +115,96 @@
 
       //Buttons
       d3.select("#ww1Button").on("mouseup", () => {
-        updateMap(ww1);
+        mapGroup.selectAll("circle").remove()
+        updateMap(ww1, "ww1");
       });
       d3.select("#ww2Button").on("mouseup", () => {
-        updateMap(ww2);
+        mapGroup.selectAll("circle").remove()
+        updateMap(ww2, "ww2");
       });
       d3.select("#bothButton").on("mouseup", () => {
         updateMap("bothWars");
       });
 
-      function updateMap(dataset){
-        console.log(dataset);
-        let circles = mapGroup.selectAll("circle");
-        circles.exit().transition().duration(700).attr("opacity",0).remove();
-        if(dataset !== "bothWars"){
-          circles.data(dataset)
-            .enter()
+      function updateMap(dataset, war) {
+        if (war === "ww1") {
+          circle = mapGroup.selectAll(".ww1circle").data(ww1);
+          circle.enter()
             .append("circle")
-            .attr("r", 1)
+            .attr("r", 1 / Math.sqrt(transform.k))
             .attr("opacity", 0.8)
-            .attr("class", dataset+"circle")
+            .attr("class", "ww1circle")
             .attr("cx", d => d.position[0])
             .attr("cy", d => d.position[1])
-            .attr("year", d => d.year)
+            // .attr("year", d => d.year)
             .attr("fill", "orange");
+
+          circle.on("mouseover", function(data) {
+            d3.select(this)
+              .attr("fill", "black")
+              .attr("r", 1.5);
+            dataGroup.append("text")
+              .attr("x", width / 4)
+              .attr("y", height / 4)
+              .attr("class", "wow")
+              .text(d => data['TGTLOCATION'] + ", " + data['TGTCOUNTRY'] + ", " + data["year"]);
+
+
+          })
+          circle.on("mouseout", function() {
+            d3.select(this)
+              .attr("fill", "orange")
+              .attr("r", 1 / Math.sqrt(transform.k));
+            d3.select(".wow").remove()
+
+          })
+        } else if (war === "ww2") {
+
+          circle2 = mapGroup.selectAll(".ww2circle").data(ww2);
+          circle2.enter()
+            .append("circle")
+            .attr("r", 1 / Math.sqrt(transform.k))
+            .attr("opacity", 0.8)
+            .attr("class", ".ww2circle")
+            .attr("cx", d => d.position[0])
+            .attr("cy", d => d.position[1])
+            // .attr("year", d => d.year)
+            .attr("fill", "purple");
+
+          circle2.on("mouseover", function(data) {
+            d3.select(this)
+              .attr("fill", "black")
+              .attr("r", 1.5);
+            dataGroup.append("text")
+              .attr("x", width2 / 2)
+              .attr("y", height2 / 4)
+              .attr("id", "wow")
+              .text(d => data['TGT_LOCATION'] + ", " + data["TGT_COUNTRY"] + ", " + data["year"]);
+
+          })
+          circle2.on("mouseout", function() {
+            d3.select(this)
+              .attr("fill", "purple")
+              .attr("r", 1 / Math.sqrt(transform.k));
+            d3.select("#wow").remove()
+
+          })
         } else {
-          let dataset = [ww1,ww2];
-          dataset.forEach(function(d,i) {
+          let dataset = [ww1, ww2];
+          dataset.forEach(function(d, i) {
             circles.data(d)
               .enter()
               .append("circle")
               .attr("r", 1)
               .attr("opacity", 0.8)
-              .attr("class", d+"circle")
+              .attr("class", d + "circle")
               .attr("cx", d => d.position[0])
               .attr("cy", d => d.position[1])
               .attr("year", d => d.year)
               .attr("fill", "orange")
-            });
+          });
         }
-
       }
-
-      var ww1id;
-      var circle;
-      var circle2;
-
-      //Brady's comment out, testing buttons
-      // circle = mapGroup.selectAll(".ww1circle").data(ww1)
-      //   .enter()
-      //   .append("circle")
-      //   .attr("r", 1)
-      //   .attr("opacity", 0.8)
-      //   .attr("class", "ww1circle")
-      //   .attr("cx", d => d.position[0])
-      //   .attr("cy", d => d.position[1])
-      //   .attr("year", d => d.year)
-      //   .attr("fill", "orange");
-
-      circle.on("mouseover", function(data) {
-        d3.select(this)
-          .attr("fill", "black")
-          .attr("r", 1.5);
-        if(this.year > maxYearWW1){
-          dataGroup.append("text")
-            .attr("x", width / 4)
-            .attr("y", height / 4)
-            .attr("class", "wow")
-            .text(d => data['TGTLOCATION'] + ", " + data['TGTCOUNTRY'] + ", " + data["year"]);
-        } else {
-          // dataGroup.append("text")
-          //   .attr("x", width / 4)
-          //   .attr("y", height / 4)
-          //   .attr("class", "wow")
-          //   .text(d => data['TGTLOCATION'] + ", " + data['TGTCOUNTRY'] + ", " + data["year"]);
-        }
-
-      });
-      circle.on("mouseout", function() {
-        d3.select(this)
-          .attr("fill", "orange")
-          .attr("r", 1 / Math.sqrt(transform.k));
-        d3.select(".wow").remove();
-
-      });
-
-      //Brady's comment out, testing buttons
-      // comment out below for quicker load
-      // circle2 = mapGroup.selectAll(".ww2circle").data(ww2)
-      //   .enter()
-      //   .append("circle")
-      //   .attr("r", 1)
-      //   .attr("opacity", 0.8)
-      //   .attr("class", ".ww2circle")
-      //   .attr("cx", d => d.position[0])
-      //   .attr("cy", d => d.position[1])
-      //   .attr("year", d => d.year)
-      //   .attr("fill", "purple");
-
-      circle2.on("mouseover", function(data) {
-        d3.select(this)
-          .attr("fill", "black")
-          .attr("r", 1.5);
-        dataGroup.append("text")
-          .attr("x", width2 / 2)
-          .attr("y", height2 / 4)
-          .attr("id", "wow")
-          .text(d => data['TGT_LOCATION'] + ", " + data["TGT_COUNTRY"] + ", " + data["year"]);
-
-      })
-      circle2.on("mouseout", function() {
-        d3.select(this)
-          .attr("fill", "purple")
-          .attr("r", 1 / Math.sqrt(transform.k));
-        d3.select("#wow").remove();
-
-      })
-
 
     }
 
