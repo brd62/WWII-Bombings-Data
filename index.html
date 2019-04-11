@@ -126,6 +126,7 @@ console.log( typeof ww2[0]["MSNDATE"].substring(ww2[0]["MSNDATE"].length-4))
       d3.select("#ww1Button").on("mouseup", () => {
         mapGroup.selectAll("circle").remove()
         updateMap(ww1, "ww1");
+        mapGroup.selectAll("circle").attr("visibility", "visible");
         d3.select("#brush").html("");
         makeBrush(ww1,'ww1');
         circle = mapGroup.selectAll(".ww1circle").data(ww1);
@@ -155,6 +156,7 @@ console.log( typeof ww2[0]["MSNDATE"].substring(ww2[0]["MSNDATE"].length-4))
       d3.select("#ww2Button").on("mouseup", () => {
         mapGroup.selectAll("circle").remove()
         updateMap(ww2, "ww2");
+        mapGroup.selectAll("circle").attr("visibility", "visible");
         d3.select("#brush").html("");
         makeBrush(ww2, 'ww2');
         circle2 = mapGroup.selectAll(".ww2circle").data(ww2);
@@ -182,8 +184,52 @@ console.log( typeof ww2[0]["MSNDATE"].substring(ww2[0]["MSNDATE"].length-4))
       d3.select("#bothButton").on("mouseup", () => {
         var both = [ww1,ww2];
         updateMap(both,"bothWars");
+        mapGroup.selectAll("circle").attr("visibility", "visible");
         d3.select("#brush").html("");
         makeBrush(both,'both');
+        //WW1 Circle Mouseovers
+        circle = mapGroup.selectAll(".ww1circle").data(ww1);
+
+        circle.on("mouseover", function(data) {
+          d3.select(this)
+            .attr("fill", "black")
+            .attr("r", 1.5);
+          dataGroup.append("text")
+            .attr("x",100)
+            .attr("y", height / 4)
+            .attr("class", "wow")
+            .text(d => data['TGTLOCATION'] + ", " + data['TGTCOUNTRY'] + ", " + data["year"]);
+
+
+        })
+        circle.on("mouseout", function() {
+          d3.select(this)
+            .attr("fill", "orange")
+            .attr("r", 2 / Math.sqrt(transform.k));
+          d3.select(".wow").remove()
+
+        })
+        //WW2 MouseOvers
+        circle2 = mapGroup.selectAll(".ww2circle").data(ww2);
+
+        circle2.on("mouseover", function(data) {
+          d3.select(this)
+            .attr("fill", "black")
+            .attr("r", 2 / Math.sqrt(transform.k));
+          dataGroup.append("text")
+            .attr("x", 100)
+            .attr("y", height2 / 4)
+            .attr("id", "wow")
+            .text(d => data['TGT_LOCATION'] + ", " + data["TGT_COUNTRY"] + ", " + data["year"]);
+
+        })
+        circle2.on("mouseout", function() {
+          d3.select(this)
+            .attr("fill", "#b85f75")
+            .attr("r", 1 / Math.sqrt(transform.k));
+          d3.select("#wow").remove()
+
+        })
       });
 
 
@@ -242,7 +288,7 @@ console.log( typeof ww2[0]["MSNDATE"].substring(ww2[0]["MSNDATE"].length-4))
     }
 
     function makeBrush(data, war) {
-
+      //Brush design modeled after class notes on 3/13
       if(war === 'ww1'){
 
         var xScale = d3.scaleLinear().domain([1914,1919]).range([10, 490]);
@@ -259,7 +305,7 @@ console.log( typeof ww2[0]["MSNDATE"].substring(ww2[0]["MSNDATE"].length-4))
       }
 
       let brushContainer = d3.select("#brush").append("div").attr("class","brushSlider");
-      brushContainer.append("div").text("Select Years");
+      brushContainer.append("div").attr("id", "yearsSelected").text("Select Years:");
       let brushSVG = brushContainer.append("svg").attr("width", 500).attr("height", 100);
       if(war === 'ww1'){
         xAxis = xAxis.ticks(6);
@@ -273,27 +319,29 @@ console.log( typeof ww2[0]["MSNDATE"].substring(ww2[0]["MSNDATE"].length-4))
       function brushMove() {
 
         if (d3.event.selection !== null) {
-          let startYear = xScale.invert(d3.event.selection[0]);
-          let endYear = xScale.invert(d3.event.selection[1]);
+          let startYear = Math.floor(xScale.invert(d3.event.selection[0]));
+          let endYear = Math.ceil(xScale.invert(d3.event.selection[1]));
+          d3.select("#yearsSelected").text("Displaying years " + startYear + "-" + endYear +". Click slider to reset.");
           let showCircles;
 
           if(war === 'ww1'){
             showCircles = mapGroup.selectAll(".ww1circle").data(data);
-            showCircles.attr("opacity", d => (d.year < startYear && d.year > endYear) ? 1: 0.05);
+            showCircles.attr("visibility", d => (d.year >= startYear && d.year <= endYear) ? "visible": "hidden");
 
           } else if (war === 'ww2'){
             showCircles = mapGroup.selectAll(".ww2circle").data(data);
-            showCircles.attr("opacity", d => (d.year < startYear && d.year > endYear) ? 1: 0.05);
+            showCircles.attr("visibility", d => (d.year >= startYear && d.year <= endYear) ? "visible": "hidden");
 
           } else {
             showCircles = mapGroup.selectAll(".ww1circle").data(data[0]);
-            showCircles.attr("opacity", d => (d.year < startYear && d.year > endYear) ? 1: 0.05);
+            showCircles.attr("visibility", d => (d.year >= startYear && d.year <= endYear) ? "visible": "hidden");
             showCircles = mapGroup.selectAll(".ww2circle").data(data[1]);
-            showCircles.attr("opacity", d => (d.year < startYear && d.year > endYear) ? 1: 0.05);
+            showCircles.attr("visibility", d => (d.year >= startYear && d.year <= endYear) ? "visible": "hidden");
 
           }
         } else {
-          mapGroup.selectAll("circle").attr("opacity", 1);
+          mapGroup.selectAll("circle").attr("visibility", "visible");
+          d3.select("#yearsSelected").text("Select Years:")
         }
       }
 
