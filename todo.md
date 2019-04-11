@@ -9,6 +9,7 @@
 * Filter data
   * Some data target countries appear as coordinates
 * CSS and general design choices
+* Fix "NaN" circle values
 
 
 
