@@ -263,6 +263,8 @@ console.log( typeof ww2[0]["MSNDATE"].substring(ww2[0]["MSNDATE"].length-4))
       let brushSVG = brushContainer.append("svg").attr("width", 500).attr("height", 100);
       if(war === 'ww1'){
         xAxis = xAxis.ticks(6);
+      } else if (war === 'ww2'){
+        xAxis = xAxis.ticks(8);
       }
       let axis = brushSVG.append("g").attr("transform", "translate("+0+","+80+")").call(xAxis);
 
