@@ -27,14 +27,10 @@
         <button id="ww1Button">WW1</button>
         <button id="ww2Button">WW2</button>
         <button id="bothButton">Both Wars</button>
-<<<<<<< HEAD
       </p>
       <svg width="600" height="600" id="map"></svg>
       <svg width="600" height="600" id="data"></svg>
       <div id="brush"></div>
-=======
-        </div>
->>>>>>> 5aacaeb904ceb964df2fbad7c950ec0b99764e05
     </div>
   </div>
 
@@ -85,16 +81,10 @@ console.log( typeof ww2[0]["MSNDATE"].substring(ww2[0]["MSNDATE"].length-4))
       });
 
       ww2.forEach(d => {
-<<<<<<< HEAD
         d["position"] = projection([d.LONGITUDE, d.LATITUDE]);
         if(typeof d.MSNDATE === 'string'){
           d["year"] = Number(d.MSNDATE.substring(d.MSNDATE.length - 4));
         }
-=======
-        d["position"] = projection([d.LONGITUDE, d.LATITUDE])
-        d["MSNDATE"] = String(d.MSNDATE)
-        d["year"] = Number(d.MSNDATE.substring(d.MSNDATE.length - 4));
->>>>>>> 5aacaeb904ceb964df2fbad7c950ec0b99764e05
       });
 
 
@@ -222,8 +212,7 @@ console.log( typeof ww2[0]["MSNDATE"].substring(ww2[0]["MSNDATE"].length-4))
             .attr("cx", d => d.position[0])
             .attr("cy", d => d.position[1])
             .attr("year", d => d.year)
-<<<<<<< HEAD
-            .attr("fill", "purple");
+            .attr("fill", "#b85f75");
         } else {
           //ww1
           circle = mapGroup.selectAll(".ww1circle").data(ww1);
@@ -301,9 +290,6 @@ console.log( typeof ww2[0]["MSNDATE"].substring(ww2[0]["MSNDATE"].length-4))
             showCircles.attr("opacity", d => (d.year < startYear && d.year > endYear) ? 1: 0.05);
 
           }
-=======
-            .attr("fill", "#b85f75");
->>>>>>> 5aacaeb904ceb964df2fbad7c950ec0b99764e05
         } else {
           mapGroup.selectAll("circle").attr("opacity", 1);
         }
