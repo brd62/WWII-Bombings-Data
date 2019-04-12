@@ -291,16 +291,16 @@ console.log( typeof ww2[0]["MSNDATE"].substring(ww2[0]["MSNDATE"].length-4))
       //Brush design modeled after class notes on 3/13
       if(war === 'ww1'){
 
-        var xScale = d3.scaleLinear().domain([1914,1919]).range([10, 490]);
+        var xScale = d3.scaleLinear().domain([1914,1919]).range([10, 480]);
         var xAxis = d3.axisBottom(xScale).tickFormat(d3.format("d"));
 
       } else if (war === 'ww2'){
 
-        var xScale = d3.scaleLinear().domain([1939,1946]).range([10, 490]);
+        var xScale = d3.scaleLinear().domain([1939,1946]).range([10, 480]);
         var xAxis = d3.axisBottom(xScale).tickFormat(d3.format("d"));
 
       } else{
-        var xScale = d3.scaleLinear().domain([1914,1946]).range([10, 490]);
+        var xScale = d3.scaleLinear().domain([1914,1946]).range([10, 480]);
         var xAxis = d3.axisBottom(xScale).tickFormat(d3.format("d"));
       }
 
