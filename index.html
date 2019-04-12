@@ -62,12 +62,7 @@
 
       const europe = await d3.json("europe.json");
       const ww1 = await d3.json("ww1.json");
-      const ww2 = await d3.csv("wwII_newest.csv", d3.autoType);
-
-
-      // let bogusValues = ["", null, "UNKNOWN OR NOT INDICATED", "UNIDENTIFIED", "undefined", "UNIDENTIFIED TARGETS", "UNIDENTIFIED TARGET", NaN];
-      // ww2 = ww2.filter(d => !bogusValues.includes(d["COUNTRY_FLYING_MISSION"]) && !bogusValues.includes(d["TGT_INDUSTRY"]) && !bogusValues.includes(d["TGT_TYPE"]) && !bogusValues.includes(d["COUNTRY_FLYING_MISSION"]) && !bogusValues.includes(d["TGT_COUNTRY"]) && !bogusValues.includes(d["TGT_LOCATION"]));
-console.log( typeof ww2[0]["MSNDATE"].substring(ww2[0]["MSNDATE"].length-4))
+      let ww2 = await d3.csv("wwII_newest.csv", d3.autoType);
 
       var data1 = ww1;
       let countries = europe;
@@ -87,6 +82,7 @@ console.log( typeof ww2[0]["MSNDATE"].substring(ww2[0]["MSNDATE"].length-4))
         }
       });
 
+      ww2 = ww2.filter(d => !isNaN(d["position"][0]) && !isNaN(d["position"][1]));
 
       let minYearWW1 = d3.min(ww1, d => d["year"]);
       let minYearWW2 = d3.min(ww2, d => d["year"]);
