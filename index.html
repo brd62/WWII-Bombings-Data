@@ -345,7 +345,7 @@ console.log( typeof ww2[0]["MSNDATE"].substring(ww2[0]["MSNDATE"].length-4))
         }
       }
 
-      brushSVG.append("g").attr("class","actualBrush").call(brush);
+      brushSVG.append("g").attr("class","actualBrush").call(brush).call(brush.move, [150,350]);
     }
 
 
