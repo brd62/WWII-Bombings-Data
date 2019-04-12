@@ -89,6 +89,7 @@
       });
 
       ww2 = ww2.filter(d => !isNaN(d["position"][0]) && !isNaN(d["position"][1]));
+      ww2 = ww2.filter(d => isNaN(d.TGT_LOCATION.substring(0,1)));
 
       let minYearWW1 = d3.min(ww1, d => d["year"]);
       let minYearWW2 = d3.min(ww2, d => d["year"]);
