@@ -70,6 +70,12 @@ button{
   font-weight: bold;
 }
 
+p {
+  font-family: "Bookman Old Style";
+  font-size: 20px;
+  font-weight: bold;
+}
+
 /* .country {
   fill: rgba(8, 81, 156, 0.6);
   stroke: rgba(8, 81, 156, 0.2);
